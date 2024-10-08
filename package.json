@@ -1,0 +1,23 @@
+{
+  "name": "wayofsamurai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/nougatcat/nodejs-way-of-samurai.git",
+  "author": "nougatcat",
+  "license": "MIT",
+  "scripts": {
+    "watch" : "tsc -w",
+    "dev" : "yarn nodemon .\\dist\\index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.5",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  },
+  "type": "module"
+}
