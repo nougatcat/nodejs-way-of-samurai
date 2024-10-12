@@ -1,7 +1,7 @@
 // import http from 'http'; //Вместо http теперь используем express
 // import fs from 'fs';
 import express from 'express';
-const app = express();
+export const app = express();
 const port = 3003;
 const HTTP_STATUSES = {
     OK_200: 200,
@@ -71,6 +71,11 @@ app.put('/courses/:id', (req, res) => {
         return;
     }
     foundCourse.title = req.body.title;
+    res.sendStatus(204);
+});
+//обнуляем "базу данных" для тестов. В прод такое нельзя
+app.delete('/__test__/data', (req, res) => {
+    db.courses = [];
     res.sendStatus(204);
 });
 app.listen(port, () => {

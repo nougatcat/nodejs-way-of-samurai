@@ -2,7 +2,7 @@
 // import fs from 'fs';
 import express, {Request, Response} from 'express';
 
-const app = express()
+export const app = express()
 const port = 3003
 
 const HTTP_STATUSES = { //можно использовать вместо кодов в sendStatus, но мне больше нравится писать числа
@@ -86,13 +86,15 @@ app.put('/courses/:id', (req, res) => { //должны поменять title у
 })
 
 
-
-
+//обнуляем "базу данных" для тестов. В прод такое нельзя
+app.delete('/__test__/data', (req, res) => {
+    db.courses = []
+    res.sendStatus(204)
+})
 
 app.listen(port, () => {
     console.log(`the server is running on port ${port}`)
 })
-
 
 
 // app.get('/home', async (req, res) => {
