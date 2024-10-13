@@ -6,10 +6,10 @@
   "author": "nougatcat",
   "license": "MIT",
   "scripts": {
-    "watch": "tsc ./src/index.ts -w --outDir ./dist --target esnext",
+    "watch": "tsc ./src/index.ts -w --outDir ./dist --target esnext --allowSyntheticDefaultImports",
     "dev": "yarn nodemon .\\dist\\index.js",
     "test": "jest",
-    "test --detectOpenHandles": "jest --detectOpenHandles"
+    "test --problems": "jest --detectOpenHandles --no-cache"
   },
   "dependencies": {
     "express": "^4.21.0"
