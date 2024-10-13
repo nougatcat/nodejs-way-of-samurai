@@ -1,5 +1,7 @@
 import request from 'supertest'
 import { app } from '../../src/index'
+import { CreateCourseModel } from '../../src/models/CreateCourseModel'
+import { UpdateCourseModel } from '../../src/models/UpdateCourseModel'
 
 describe('/course', () => {
     beforeAll(async () => {
@@ -26,9 +28,10 @@ describe('/course', () => {
     })
     let createdCourse1:any = null //создаем эту переменную глобально, чтобы из следующего теста можно было прочитать значение, полученное в предыдущем
     test('should create a course with correct input data', async () => {
+        const data: CreateCourseModel = { title: 'sampletext' }
         const createResponse = await request(app)
             .post('/courses')
-            .send({title: 'sampletext'})
+            .send(data)
                 .expect(201)
         createdCourse1 = createResponse.body
         expect(createdCourse1).toEqual({
@@ -41,9 +44,10 @@ describe('/course', () => {
     })
     let createdCourse2:any = null
     test('create one more course', async () => {
+        const data: CreateCourseModel = { title: 'sampletext' }
         const createResponse = await request(app)
             .post('/courses')
-            .send({title: 'sampletext'})
+            .send(data)
                 .expect(201)
         createdCourse2 = createResponse.body
         expect(createdCourse2).toEqual({
@@ -56,24 +60,27 @@ describe('/course', () => {
     })
 
     test('should not update a course with incorrect input data', async () => {
+        const data: UpdateCourseModel = { title: '' }
         await request(app)
             .put(`/courses/${createdCourse1.id}`)
-            .send({title: ''})
+            .send(data)
                 .expect(400)
         await request(app)
             .get('/courses')
                 .expect(200, [createdCourse1, createdCourse2])
     })
     test('should not update a course that not exist', async () => {
+        const data: UpdateCourseModel = { title: 'good new title' }
         await request(app)
             .put(`/courses/`+ -100) //-100 т.к. нет такого id точно
-            .send({title: 'good new title'})
+            .send(data)
                 .expect(404)
     })
     test('should update a course with correct input data', async () => {
+        const data: UpdateCourseModel = { title: 'good new title' }
         await request(app)
             .put(`/courses/${createdCourse1.id}`)
-            .send({ title: 'good new title' })
+            .send(data)
                 .expect(204)
         const createResponse = await request(app)
             .get(`/courses/${createdCourse1.id}`)

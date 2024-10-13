@@ -12,10 +12,16 @@ const HTTP_STATUSES = {
 };
 const db = {
     courses: [
-        { id: 1, title: "front end 1" },
-        { id: 2, title: "devops 2" },
-        { id: 3, title: "backend" }
+        { id: 1, title: "front end 1", studentsCount: 100 },
+        { id: 2, title: "devops 2", studentsCount: 100 },
+        { id: 3, title: "backend", studentsCount: 100 }
     ]
+};
+const getCourseViewModel = (dbCourse) => {
+    return {
+        id: dbCourse.id,
+        title: dbCourse.title
+    };
 };
 //для парсинга body из post запросов
 const jsonBodyMiddleWare = express.json(); //не тот же метод джсон, что у респонсов
@@ -29,11 +35,7 @@ app.get('/courses', (req, res) => {
     if (req.query.title) {
         foundCourses = foundCourses.filter(c => c.title.indexOf(req.query.title) > -1);
     }
-    // if (!foundCourses) { //не нужно выдавать 404, достаточно, если вернется пустой массив
-    //     res.sendStatus(404)
-    //     return;
-    // }
-    res.json(foundCourses);
+    res.json(foundCourses.map(getCourseViewModel));
 });
 // для запросов типа /courses/1 (uri param)
 app.get('/courses/:id', (req, res) => {
@@ -42,7 +44,7 @@ app.get('/courses/:id', (req, res) => {
         res.sendStatus(404);
         return;
     }
-    res.json(foundCourse);
+    res.json(getCourseViewModel(foundCourse));
 });
 app.post('/courses', (req, res) => {
     if (!req.body.title || !req.body.title.trim()) { //req.body.title.trim() нужен для проверки, не прислали ли строку только с пробелами
@@ -51,10 +53,11 @@ app.post('/courses', (req, res) => {
     }
     const createdCourse = {
         id: +(new Date()), //дата переведенная в number, дата - это рандомное число для примера вместо нормальной генерации id
-        title: req.body.title
+        title: req.body.title,
+        studentsCount: 100
     };
     db.courses.push(createdCourse);
-    res.status(201).json(createdCourse);
+    res.status(201).json(getCourseViewModel(createdCourse));
 }); //такой POST сохранится до перезагрузки сервера, потому что нет БД
 app.delete('/courses/:id', (req, res) => {
     db.courses = db.courses.filter(c => c.id !== +req.params.id);
@@ -71,7 +74,7 @@ app.put('/courses/:id', (req, res) => {
         return;
     }
     foundCourse.title = req.body.title;
-    res.sendStatus(204);
+    res.sendStatus(204); //?не типизируем рес, если не возвращаем ничего кроме кода
 });
 //обнуляем "базу данных" для тестов. В прод такое нельзя
 app.delete('/__test__/data', (req, res) => {
