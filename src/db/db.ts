@@ -1,4 +1,4 @@
-import { CourseType } from '../app.js';
+import { CourseType } from '../app';
 export const db: DBType = {
     courses: [
         {id: 1, title: "front end 1", studentsCount: 100},

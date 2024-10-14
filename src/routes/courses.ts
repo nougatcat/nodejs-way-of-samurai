@@ -1,4 +1,4 @@
-import {Request, Response, Express} from 'express';
+import express, {Request, Response, Express} from 'express';
 import { CourseViewModel } from '.././models/CourseViewModel';
 import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '.././types';
 import { QueryCoursesModel } from '.././models/QueryCoursesModel';
@@ -9,12 +9,11 @@ import { CourseType, getCourseViewModel } from '../app.js';
 import { DBType } from '../db/db.js';
 
 
-export const addCoursesRoutes = (app: Express, db: DBType) => {
-    app.get('/', (req, res) => {
-        res.send('<h1>Hello ooooowlrd</h1>') //метод send автоматически понимает что там теги, если они есть 
-    })
+export const getCoursesRouter = (db: DBType) => {
+    const router = express.Router()
+
     // для запросов типа /courses?title=end (query param) или /courses
-    app.get('/courses', (req: RequestWithQuery<QueryCoursesModel>, res: Response<CourseViewModel[]>) => {
+    router.get('/', (req: RequestWithQuery<QueryCoursesModel>, res: Response<CourseViewModel[]>) => {
         let foundCourses = db.courses
         if (req.query.title) {
             foundCourses = foundCourses.filter(c => c.title.indexOf(req.query.title) > -1 )
@@ -22,7 +21,7 @@ export const addCoursesRoutes = (app: Express, db: DBType) => {
         res.json(foundCourses.map(getCourseViewModel))
     }) 
     // для запросов типа /courses/1 (uri param)
-    app.get('/courses/:id', (req:RequestWithParams<URIParamsCourseIdModel>, res:Response<CourseViewModel>) => {
+    router.get('/:id', (req:RequestWithParams<URIParamsCourseIdModel>, res:Response<CourseViewModel>) => {
         const foundCourse = (db.courses.find(c => c.id === +req.params.id))
         if (!foundCourse) {
             res.sendStatus(404)
@@ -30,7 +29,7 @@ export const addCoursesRoutes = (app: Express, db: DBType) => {
         }
         res.json(getCourseViewModel(foundCourse))
     })
-    app.post('/courses', (req: RequestWithBody<CreateCourseModel>, res:Response<CourseViewModel>) => {
+    router.post('/', (req: RequestWithBody<CreateCourseModel>, res:Response<CourseViewModel>) => {
         if (!req.body.title || !req.body.title.trim()) { //req.body.title.trim() нужен для проверки, не прислали ли строку только с пробелами
             res.sendStatus(400) //validation error
             return;
@@ -44,13 +43,13 @@ export const addCoursesRoutes = (app: Express, db: DBType) => {
         res.status(201).json(getCourseViewModel(createdCourse))
         
     }) //такой POST сохранится до перезагрузки сервера, потому что нет БД
-    app.delete('/courses/:id', (req:RequestWithParams<URIParamsCourseIdModel>, res) => {
+    router.delete('/:id', (req:RequestWithParams<URIParamsCourseIdModel>, res) => {
         db.courses = db.courses.filter(c => c.id !== +req.params.id)
     
         res.sendStatus(204) //no content
     })
     
-    app.put('/courses/:id', (req:RequestWithParamsAndBody<URIParamsCourseIdModel,UpdateCourseModel>, res) => { //должны поменять title у определенного id
+    router.put('/:id', (req:RequestWithParamsAndBody<URIParamsCourseIdModel,UpdateCourseModel>, res) => { //должны поменять title у определенного id
         if (!req.body.title || !req.body.title.trim()) { //req.body.title.trim() нужен для проверки, не прислали ли строку только с пробелами
             res.sendStatus(400) //validation error
             return;
@@ -63,4 +62,6 @@ export const addCoursesRoutes = (app: Express, db: DBType) => {
         foundCourse.title = req.body.title
         res.sendStatus(204) //?не типизируем рес, если не возвращаем ничего кроме кода
     })
+
+    return router
 }

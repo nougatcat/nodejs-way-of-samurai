@@ -1,7 +1,7 @@
 import express from 'express';
-import { addCoursesRoutes } from './routes/courses.js';
+import { getCoursesRouter } from './routes/courses.js';
 import { db } from './db/db.js';
-import { addTestsRoutes } from './routes/__forTests.js';
+import { getTestsRouter } from './routes/__forTests.js';
 export const app = express();
 //для парсинга body из post запросов
 export const jsonBodyMiddleWare = express.json(); //не тот же метод джсон, что у респонсов
@@ -19,12 +19,5 @@ export const getCourseViewModel = (dbCourse) => {
         title: dbCourse.title
     };
 };
-addCoursesRoutes(app, db);
-addTestsRoutes(app, db);
-// app.get('/home', async (req, res) => {
-// try {
-//     const data = await readFile('pages/home.html')
-//     res.send(data) // тут предложит скачать файл, а не отобразит html как в методе http
-// } catch (error) { //обработка reject
-//     res.send('error code 500')
-// })
+app.use("/courses", getCoursesRouter(db));
+app.use('/__test__', getTestsRouter(db));

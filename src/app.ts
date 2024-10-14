@@ -1,8 +1,8 @@
 import express, {Request, Response} from 'express';
 import { CourseViewModel } from './models/CourseViewModel';
-import { addCoursesRoutes } from './routes/courses.js';
+import { getCoursesRouter } from './routes/courses.js';
 import { db } from './db/db.js';
-import { addTestsRoutes } from './routes/__forTests.js';
+import { getTestsRouter } from './routes/__forTests.js';
 
 export const app = express()
 //для парсинга body из post запросов
@@ -32,15 +32,11 @@ export type CourseType = {
     studentsCount: number //пример параметра, который не должен быть доступен из api
 }
 
-addCoursesRoutes(app, db)
 
-addTestsRoutes(app, db)
+app.use("/courses", getCoursesRouter(db))
+
+app.use('/__test__', getTestsRouter(db))
 
 
-// app.get('/home', async (req, res) => {
-// try {
-//     const data = await readFile('pages/home.html')
-//     res.send(data) // тут предложит скачать файл, а не отобразит html как в методе http
-// } catch (error) { //обработка reject
-//     res.send('error code 500')
-// })
+
+

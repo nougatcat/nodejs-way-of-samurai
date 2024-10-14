@@ -3,7 +3,7 @@ import { app } from '../../src/app'
 import { CreateCourseModel } from '../../src/models/CreateCourseModel'
 import { UpdateCourseModel } from '../../src/models/UpdateCourseModel'
 
-describe('/course', () => {
+describe('/courses', () => {
     beforeAll(async () => {
         await request(app).delete('/__test__/data')
     })
